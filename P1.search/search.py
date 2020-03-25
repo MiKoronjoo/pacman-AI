@@ -18,7 +18,6 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
-from game import Directions
 
 
 class SearchProblem:
@@ -102,13 +101,13 @@ def depthFirstSearch(problem):
         return []
 
     path = helper(problem.getStartState(), [], [])
-    return [direct[p] for p in path]
+    return path
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return []
 
 
 def uniformCostSearch(problem):
@@ -136,10 +135,3 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
-
-direct = {
-    'South': Directions.SOUTH,
-    'West': Directions.WEST,
-    'North': Directions.NORTH,
-    'East': Directions.EAST
-}
