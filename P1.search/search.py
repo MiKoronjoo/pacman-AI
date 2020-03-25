@@ -63,6 +63,22 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
+class Path:
+    PRV = []
+
+    def __init__(self, state, direction='', parent=None):
+        Path.PRV.append(state)
+        self.state = state
+        self.parent = parent
+        self.children = []
+        self.direction = direction
+
+    def add_child(self, child):
+        new_child = Path(child[0], child[1], self)
+        self.children.append(new_child)
+        return new_child
+
+
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -106,7 +122,22 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    root = Path(problem.getStartState())
+    laye = [root]
+    while laye:
+        temp = []
+        for r in laye:
+            for child in problem.getSuccessors(r.state):
+                if child[0] not in Path.PRV:
+                    temp.append(r.add_child(child))
+                    if problem.isGoalState(child[0]):
+                        leaf = temp[-1]
+                        res = []
+                        while leaf.direction:
+                            res.append(leaf.direction)
+                            leaf = leaf.parent
+                        return res[::-1]
+        laye = temp
     return []
 
 
