@@ -146,7 +146,7 @@ def uniformCostSearch(problem):
     heap = [(0, Node(problem.getStartState()))]
     while heap:
         cost, node = heapq.heappop(heap)
-        if node.state in COSTS and COSTS[node.state] < cost:
+        if node.state in COSTS and COSTS[node.state] <= cost:
             continue
         COSTS[node.state] = cost
         if problem.isGoalState(node.state):
