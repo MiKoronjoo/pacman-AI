@@ -63,20 +63,24 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
-class Path:
+class Node:
     PRV = []
 
     def __init__(self, state, direction='', parent=None):
-        Path.PRV.append(state)
+        Node.PRV.append(state)
         self.state = state
         self.parent = parent
         self.children = []
         self.direction = direction
 
     def add_child(self, child):
-        new_child = Path(child[0], child[1], self)
+        new_child = Node(child[0], child[1], self)
         self.children.append(new_child)
         return new_child
+
+    @classmethod
+    def clear(cls):
+        cls.PRV = []
 
 
 def tinyMazeSearch(problem):
@@ -91,60 +95,67 @@ def tinyMazeSearch(problem):
 
 
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
+    """Search the deepest nodes in the search tree first."""
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-    """
-
-    def helper(state, path, prv):
-        if state in prv:
+    def helper(state, path, visited):
+        if state in visited:
             return []
         else:
-            prv.append(state)
+            visited.append(state)
         if problem.isGoalState(state):
             return path
         all_paths = []
         for suc in problem.getSuccessors(state):
-            all_paths.append(helper(suc[0], path + [suc[1]], prv[:]))
+            all_paths.append(helper(suc[0], path + [suc[1]], visited[:]))
         paths = filter(len, all_paths)
         if paths:
             return min(paths, key=len)
         return []
 
-    path = helper(problem.getStartState(), [], [])
-    return path
+    return helper(problem.getStartState(), [], [])
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    root = Path(problem.getStartState())
+    root = Node(problem.getStartState())
     laye = [root]
     while laye:
         temp = []
         for r in laye:
             for child in problem.getSuccessors(r.state):
-                if child[0] not in Path.PRV:
+                if child[0] not in Node.PRV:
                     temp.append(r.add_child(child))
                     if problem.isGoalState(child[0]):
-                        leaf = temp[-1]
-                        res = []
-                        while leaf.direction:
-                            res.append(leaf.direction)
-                            leaf = leaf.parent
-                        return res[::-1]
+                        node = temp[-1]
+                        path = []
+                        while node.parent:
+                            path.append(node.direction)
+                            node = node.parent
+                        Node.clear()
+                        return path[::-1]
         laye = temp
+    Node.clear()
     return []
 
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    import heapq
+    COSTS = {}
+    heap = [(0, Node(problem.getStartState()))]
+    while heap:
+        cost, node = heapq.heappop(heap)
+        if node.state in COSTS and COSTS[node.state] < cost:
+            continue
+        COSTS[node.state] = cost
+        if problem.isGoalState(node.state):
+            path = []
+            while node.parent:
+                path.append(node.direction)
+                node = node.parent
+            return path[::-1]
+        for child in problem.getSuccessors(node.state):
+            heapq.heappush(heap, (cost + child[2], node.add_child(child)))
 
 
 def nullHeuristic(state, problem=None):
