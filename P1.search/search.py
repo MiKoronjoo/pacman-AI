@@ -66,15 +66,16 @@ class SearchProblem:
 class Node:
     PRV = []
 
-    def __init__(self, state, direction='', parent=None):
+    def __init__(self, state, direction='', parent=None, cost=0):
         Node.PRV.append(state)
         self.state = state
         self.parent = parent
         self.children = []
         self.direction = direction
+        self.cost = cost
 
     def add_child(self, child):
-        new_child = Node(child[0], child[1], self)
+        new_child = Node(child[0], child[1], self, self.cost + child[2])
         self.children.append(new_child)
         return new_child
 
@@ -153,9 +154,12 @@ def uniformCostSearch(problem):
             while node.parent:
                 path.append(node.direction)
                 node = node.parent
+            Node.clear()
             return path[::-1]
         for child in problem.getSuccessors(node.state):
             heapq.heappush(heap, (cost + child[2], node.add_child(child)))
+    Node.clear()
+    return []
 
 
 def nullHeuristic(state, problem=None):
@@ -168,8 +172,23 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    import heapq
+    root = Node(problem.getStartState())
+    heap = [(heuristic(root.state, problem), root)]
+    while heap:
+        _, node = heapq.heappop(heap)
+        if problem.isGoalState(node.state):
+            path = []
+            while node.parent:
+                path.append(node.direction)
+                node = node.parent
+            Node.clear()
+            return path[::-1]
+        for child in problem.getSuccessors(node.state):
+            if child[0] not in Node.PRV:
+                heapq.heappush(heap, (node.cost + child[2] + heuristic(child[0], problem), node.add_child(child)))
+    Node.clear()
+    return []
 
 
 # Abbreviations
