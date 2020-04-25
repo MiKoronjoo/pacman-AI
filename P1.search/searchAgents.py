@@ -516,14 +516,9 @@ class ClosestDotSearchAgent(SearchAgent):
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
-        # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition()
-        food = gameState.getFood()
-        walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        from search import uniformCostSearch
+        return uniformCostSearch(problem)
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -544,7 +539,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     def __init__(self, gameState):
         "Stores information from the gameState.  You don't need to change this."
         # Store the food for later reference
-        PositionSearchProblem.__init__(self, gameState)
+        PositionSearchProblem.__init__(self, gameState, warn=False)
         self.food = gameState.getFood()
 
         # Store info for the PositionSearchProblem (no need to change this)
@@ -558,10 +553,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x, y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state in self.food.asList()
 
 
 def mazeDistance(point1, point2, gameState):
